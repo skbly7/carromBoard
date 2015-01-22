@@ -6,6 +6,8 @@
 Striker::Striker()
 {
     create_line(2.0f,0.0f);
+    this->angle_max[0]=-1.5f;
+    this->angle_max[1]=1.5f;
 }
 
 Striker::~Striker()
@@ -29,12 +31,13 @@ void Striker::move_right() {
 }
 
 void Striker::rotate_left() {
-    if(fabs(this->angle-this->strip) <1.5f)
+    if((this->angle-this->strip) > this->angle_max[0])
         this->angle=this->angle-this->strip;
 }
 
 void Striker::rotate_right() {
-    if(fabs(this->angle+this->strip) <1.5f)
+//    std::cout<<this->angle<<" degree\n";
+    if((this->angle+this->strip) < this->angle_max[1])
         this->angle=this->angle+this->strip;
 }
 
@@ -71,4 +74,17 @@ void Striker::shoot() {
 void Striker::limit(float max_width)
 {
     this->max_width=max_width;
+}
+
+void Striker::set_angle(float angle)
+{
+    //-3.15f & 0.0f
+    this->angle=angle;
+}
+
+void Striker::set_limit(float angle1,float angle2)
+{
+    //-3.15f & 0.0f
+    this->angle_max[0]=angle1;
+    this->angle_max[1]=angle2;
 }

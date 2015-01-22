@@ -249,7 +249,7 @@
 1421885983 c:\users\shivam\desktop\carrom\include\coin.h
 	"object.h"
 
-1421885992 source:c:\users\shivam\desktop\carrom\src\coin.cpp
+1421899222 source:c:\users\shivam\desktop\carrom\src\coin.cpp
 	"Coin.h"
 	"object.h"
 	"Utility.h"
@@ -264,7 +264,7 @@
 	"Coin.h"
 	"Board.h"
 
-1421888233 source:c:\users\shivam\desktop\carrom\src\world.cpp
+1421898308 source:c:\users\shivam\desktop\carrom\src\world.cpp
 	"World.h"
 	"Coin.h"
 	"Board.h"
@@ -272,19 +272,19 @@
 	<Utility.h>
 	<iostream>
 
-1421885581 source:c:\users\shivam\desktop\carrom\src\object.cpp
+1421891061 source:c:\users\shivam\desktop\carrom\src\object.cpp
 	"object.h"
 	<iostream>
 	<cmath>
 
-1421885311 c:\users\shivam\desktop\carrom\include\object.h
+1421899180 c:\users\shivam\desktop\carrom\include\object.h
 
-1421887875 c:\users\shivam\desktop\carrom\include\board.h
+1421896925 c:\users\shivam\desktop\carrom\include\board.h
 	"Corner.h"
 	<Coin.h>
 	<Striker.h>
 
-1421887713 source:c:\users\shivam\desktop\carrom\src\board.cpp
+1421900236 source:c:\users\shivam\desktop\carrom\src\board.cpp
 	"Board.h"
 	"Utility.h"
 	"Corner.h"
@@ -294,7 +294,7 @@
 
 1421886628 c:\users\shivam\desktop\carrom\include\utility.h
 
-1421886862 source:c:\users\shivam\desktop\carrom\src\utility.cpp
+1421895869 source:c:\users\shivam\desktop\carrom\src\utility.cpp
 	"Utility.h"
 	<GL/glut.h>
 	<cmath>
@@ -306,10 +306,10 @@
 	"Corner.h"
 	"Utility.h"
 
-1421865607 c:\users\shivam\desktop\carrom\include\striker.h
+1421892397 c:\users\shivam\desktop\carrom\include\striker.h
 	<Coin.h>
 
-1421877718 source:c:\users\shivam\desktop\carrom\src\striker.cpp
+1421895247 source:c:\users\shivam\desktop\carrom\src\striker.cpp
 	"Striker.h"
 	<Utility.h>
 	<GL/glut.h>

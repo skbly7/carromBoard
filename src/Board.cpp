@@ -4,6 +4,7 @@
 #include <cmath>
 #include <GL/glut.h>
 #include <iostream>
+
 Board::Board(float w=4.0f,float h=4.0f)
 {
     for(int i=0;i<100;i++)
@@ -13,15 +14,32 @@ Board::Board(float w=4.0f,float h=4.0f)
     this->reset=0;
     this->height=h;
     this->foul=0;
-    this->score=0;
+    this->score=30;
     this->s_w=(this->width/2)*0.75f;
     this->s_h=(this->height/2)*0.75f;
-    this->rgb(0.98f,0.94f,0.85f);
-    this->drgb(0.68f,0.60f,0.45f);
     this->place_corners();
     this->add_striker(1.0f,1.0f,0.0f,0.0f,-this->s_h*0.92f,0.25f);
     this->striker->setId(10);
     this->add_coins();
+}
+
+void Board::convert_to_multi(int i)
+{
+    this->multi=i;
+}
+
+void Board::dark_theme()
+{
+    this->rgb(0.02f,0.06f,0.15f);
+    this->drgb(0.32f,0.40f,0.55f);
+    this->brgb(1.0f,1.0f,1.0f);
+}
+
+void Board::light_theme()
+{
+    this->rgb(0.98f,0.94f,0.85f);
+    this->drgb(0.68f,0.60f,0.45f);
+    this->brgb(0.0f,0.0f,0.0f);
 }
 
 void Board::add_striker(float r,float g,float b,float x,float y,float rad){
@@ -62,6 +80,11 @@ void Board::drgb(float r, float g, float b) {
     this->__dg = g;
     this->__db = b;
 }
+void Board::brgb(float r, float g, float b) {
+    this->__br = r;
+    this->__bg = g;
+    this->__bb = b;
+}
 
 void Board::draw_corners() {
     for(int i=0;i<4;i++)
@@ -84,7 +107,7 @@ void Board::add_coins(){
     float angle=0;
     for(int i=0;i<8;i++)
     {
-        this->add_coin(0.0f,0.0f,0.0f,sketch->rotatex(1.0f,0.0f,angle), sketch->rotatey(1.0f,0.0f,angle),0.15f,1);
+        this->add_coin(0.2f,0.2f,0.2f,sketch->rotatex(1.0f,0.0f,angle), sketch->rotatey(1.0f,0.0f,angle),0.15f,1);
         angle += 42.0f;
     }
     angle=21.0f;
@@ -111,23 +134,91 @@ void Board::main_board(){
     Utility *sketch= new Utility;
     float w=(this->width/2), h=(this->height/2);
     sketch->filled_rectangle(this->__dr,this->__dg,this->__db,-w-0.2f,-h-0.2f,-w-0.2f,h+0.2f,w+0.2f,h+0.2f,w+0.2f,-h-0.2f);
-    this->rgb(0.98f,0.94f,0.85f);
     sketch->filled_rectangle(this->__r,this->__g,this->__b,-w,-h,-w,h,w,h,w,-h);
 }
 
 void Board::draw(){
+    if(this->player==1 && this->multi==1)
+        glRotatef(180,0.0f,0.0f,1.0f);
     this->main_board();
     this->corner_beautify();
     this->draw_corners();
     this->striker_area();
     this->background_features();
     this->draw_coins();
+    this->striker->draw();
+    if(this->player==1 && this->multi==1)
+    {
+        glRotatef(180,0.0f,0.0f,1.0f);
+    }
+    this->display_score();
+    this->display_pocketed();
+    if(this->multi==1)
+    {
+        this->chance_kiski();
+    }
+    else
+    {
+
+    }
+}
+
+void Board::chance_kiski(){
+    Utility *sketch= new Utility;
+    if(this->player==0)
+        sketch->write_text(1.0f,0.0f,0.0f,-7.0f,4.65f,0,"Player 1 chance (Put WHITE balls)");
+    if(this->player==1)
+        sketch->write_text(1.0f,0.0f,0.0f,-7.0f,4.65f,0,"Player 2 chance (Put BLACK balls)");
+}
+
+void Board::display_pocketed() {
+    Object *temp=new Coin;
+    Utility *sketch = new Utility;
+    float x=-6.5f,y=-3.5f;
+    for(int i=0;i<pocketed_count;i++)
+    {
+        temp->setId(this->pocketed[i]->getId());
+        if(temp->getId()==1)
+            temp->rgb(0.0f,0.0f,0.0f);
+        if(temp->getId()==0)
+            temp->rgb(1.0f,1.0f,1.0f);
+        if(temp->getId()==50)
+            temp->rgb(1.0f,0.0f,0.0f);
+        temp->position(x,y);
+        temp->radius(0.15f);
+        sketch->filled_top_given(0.9f,0.5f,0.5f,x-0.2f,y+0.2f,0.4f);
+        temp->draw();
+        y+=0.4f;
+    }
 }
 
 void Board::draw_coins() {
     for(int i=1;i<this->items_count;i++)
         this->items[i]->draw();
-    this->items[0]->draw();
+}
+
+void Board::display_score() {
+    char temp[100];
+    Utility *sketch = new Utility;
+    sketch->filled_top_given(0.3f,0.7f,0.4f,-7.1f,4.5f,1.5f);
+    if(this->multi==0)
+    {
+        sketch->write_text(0.0f,1.0f,1.0f,-7.0f,4.0f,1,"Score");
+        itoa(this->score,temp,10);
+        sketch->write_text(1.0f,1.0f,1.0f,-7.0f,3.5f,1,temp);
+    }
+    else
+    {
+        sketch->write_text(0.0f,1.0f,1.0f,-7.0f,4.0f,1,"Left balls");
+        int countr=0;
+        for(int i=0;i<items_count;i++)
+        {
+            if(this->items[i]->notPocketed() && this->items[i]->getId()==this->player)
+                countr++;
+        }
+        itoa(countr,temp,10);
+        sketch->write_text(1.0f,1.0f,1.0f,-7.0f,3.5f,1,temp);
+    }
 }
 
 void Board::background_features(){
@@ -137,7 +228,7 @@ void Board::background_features(){
     sketch->filled_circle(this->__dr,this->__dg,this->__db,0.0f,0.0f,0.2f);
 
     glLineWidth(2.0f);
-    sketch->empty_circle(0.0f,0.0f,0.0f,0.0f,0.0f,1.18f);
+    sketch->empty_circle(this->__br,this->__bg,this->__bb,0.0f,0.0f,1.18f);
     glLineWidth(1.0f);
     sketch->draw_triangle(this->__dr,this->__dg,this->__db,1.18f,0.0f,-(1.17f/sqrt(2))+0.2f,-(1.17f*sqrt(3)/2.0f),-(1.17f/sqrt(2))+0.2f,(1.17f*sqrt(3)/2.0f));
     sketch->draw_triangle(this->__dr,this->__dg,this->__db,-1.18f,0.0f,(1.17f/sqrt(2))-0.2f,-(1.17f*sqrt(3)/2.0f),(1.17f/sqrt(2))-0.2f,(1.17f*sqrt(3)/2.0f));
@@ -147,8 +238,10 @@ void Board::background_features(){
     {
         x = this->corner[i].xpos();
         y = this->corner[i].ypos();
-        sketch->draw_line(0.0f,0.0f,0.0f,(x-0)*0.85f,(y-0)*0.85f,(x-0)*0.4f,(y-0)*0.4f);
-        sketch->incomplete_circle(0.0f,0.0f,0.0f,(x-0)*0.4f,(y-0)*0.4f,0.5f,angle[i]);
+        glLineWidth(2.0f);
+        sketch->draw_line(this->__br,this->__bg,this->__bb,(x-0)*0.85f,(y-0)*0.85f,(x-0)*0.4f,(y-0)*0.4f);
+        glLineWidth(1.0f);
+        sketch->incomplete_circle(this->__br,this->__bg,this->__bb,(x-0)*0.4f,(y-0)*0.4f,0.5f,angle[i]);
     }
 }
 
@@ -173,9 +266,9 @@ void Board::striker_area(){
                 fraction*=-1;
             float m = 1.0000f - fraction;
             glLineWidth(2.0f);
-            sketch->draw_line(0.0f,0.0f,0.0f,cord[i][0],cord[i][1]+r,cord[i][2],cord[i][3]-r);
+            sketch->draw_line(this->__br,this->__bg,this->__bb,cord[i][0],cord[i][1]+r,cord[i][2],cord[i][3]-r);
             glLineWidth(1.0f);
-            sketch->draw_line(0.0f,0.0f,0.0f,cord[i][0]*m,cord[i][1]+r,cord[i][2]*m,cord[i][3]-r);
+            sketch->draw_line(this->__br,this->__bg,this->__bb,cord[i][0]*m,cord[i][1]+r,cord[i][2]*m,cord[i][3]-r);
         }
         else
         {
@@ -184,9 +277,9 @@ void Board::striker_area(){
                 fraction*=-1;
             float m = 1.0000f - fraction;
             glLineWidth(2.0f);
-            sketch->draw_line(0.0f,0.0f,0.0f,cord[i][0]+r,cord[i][1],cord[i][2]-r,cord[i][3]);
+            sketch->draw_line(this->__br,this->__bg,this->__bb,cord[i][0]+r,cord[i][1],cord[i][2]-r,cord[i][3]);
             glLineWidth(1.0f);
-            sketch->draw_line(0.0f,0.0f,0.0f,cord[i][0]+r,cord[i][1]*m,cord[i][2]-r,cord[i][3]*m);
+            sketch->draw_line(this->__br,this->__bg,this->__bb,cord[i][0]+r,cord[i][1]*m,cord[i][2]-r,cord[i][3]*m);
         }
         float a=cord[i][0]+0.2f,b=cord[i][1]+0.2f,c=cord[i][2]+0.2f,d=cord[i][3]+0.2f;
         if(a>0)
@@ -199,8 +292,8 @@ void Board::striker_area(){
         if(d>0)
             d-=0.4f;
 
-        sketch->empty_circle(0.0f,0.0f,0.0f,a,b,0.2f);
-        sketch->empty_circle(0.0f,0.0f,0.0f,c,d,0.2f);
+        sketch->empty_circle(this->__br,this->__bg,this->__bb,a,b,0.2f);
+        sketch->empty_circle(this->__br,this->__bg,this->__bb,c,d,0.2f);
         sketch->filled_circle(0.5f,0.0f,0.0f,a,b,0.175f);
         sketch->filled_circle(0.5f,0.0f,0.0f,c,d,0.175f);
     }
@@ -259,15 +352,17 @@ void Board::pocket_coin() {
             if(j!=0)
             {
                 this->items[j]->pocketted();
+                this->pocketed[pocketed_count++]=this->items[j];
             }
                 if(this->items[j]->getId() == this->not_color_required)
-                    this->score-=10;
+                    this->score-=5;
                 else if(this->items[j]->getId() == this->queen)
                     this->score+=50;
                 else if(this->items[j]->getId() == 10 && this->foul)
-                    this->score-=20;
+                    this->score-=5;
                 else if(this->items[j]->getId()!=10)
                     this->score+=10;
+                this->player=1-this->player;
 //                std::cout<<score<<" "<<this->items[j]->getId()<<" pocketed\n";
             this->items[j]->v(0.0f,0.0f);
         }
@@ -285,8 +380,21 @@ void Board::reset_striker()
 {
     if(this->reset && this->isStopped())
     {
+        Sleep(500);
         this->reset=0;
-        this->place_striker(0.0f,-this->s_h*0.92f);
+        this->player=1-this->player;
+        if(this->player==0 || this->multi==0)
+        {
+            this->striker->set_angle(0.0f);
+            this->striker->set_limit(-1.5f,1.5f);
+            this->place_striker(0.0f,-this->s_h*0.92f);
+        }
+        else
+        {
+            this->striker->set_angle(-3.15f);
+            this->striker->set_limit(-4.7f,-1.65f);
+            this->place_striker(0.0f,this->s_h*0.92f);
+        }
     }
 }
 
@@ -338,14 +446,23 @@ void Board::handleKeys(unsigned char key, int x, int y) {
 }
 
 void Board::specialKeys(int key,int x,int y) {
-    if(key==100 && this->isStopped())
+    if(key==100 && this->isStopped() && (this->player==0 || this->multi==0))
     {
         this->striker->move_left();
     }
-    if(key==102 && this->isStopped())
+    else if(key==102 && this->isStopped() && (this->player==0 || this->multi==0))
     {
         this->striker->move_right();
     }
+    else if(key==100 && this->isStopped() && (this->player==1 && this->multi==1))
+    {
+        this->striker->move_right();
+    }
+    else if(key==102 && this->isStopped() && (this->player==1 && this->multi==1))
+    {
+        this->striker->move_left();
+    }
+
     if(key==101 && this->isStopped())
     {
         this->striker->increase_power();

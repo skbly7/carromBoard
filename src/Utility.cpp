@@ -112,6 +112,6 @@ void Utility::write_text(float r, float g, float b, float x, float y, int font, 
   int len, i;
   len = (int)strlen(str);
   for (i = 0; i < len; i++) {
-    glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, str[i]);
+    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, str[i]);
   }
 }

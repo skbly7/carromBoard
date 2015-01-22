@@ -19,8 +19,11 @@ class Striker : public Coin
         void rotate_right();
         void increase_power();
         void decrease_power();
+        void set_limit(float,float);
+        void set_angle(float);
     protected:
     private:
+        float angle_max[2];
         float length,angle;
         float strip=0.05f,max_width;
 };

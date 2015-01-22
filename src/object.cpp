@@ -92,10 +92,11 @@ bool Object::stopped() {
 bool Object::isCollided(Object *b)
 {
     float min_distance= this->gradius()+b->gradius();
+    float threshold=0.01f;
     float x_dist = this->xpos() - b->xpos();
     float y_dist = this->ypos() - b->ypos();
     float distance = sqrtf(x_dist*x_dist + y_dist*y_dist);
-    if(distance <= min_distance)
+    if(distance <= min_distance + threshold)
      {
         return true;
      }
