@@ -25,6 +25,11 @@ void Striker::move_left() {
         this->position(this->__x-this->strip,this->__y);
 }
 
+void Striker::mouseSetLocation(float x) {
+    if(fabs(x)<this->max_width)
+        this->position(x,this->__y);
+}
+
 void Striker::move_right() {
     if(fabs(this->__x+this->strip)<this->max_width)
         this->position(this->__x+this->strip,this->__y);
@@ -87,4 +92,23 @@ void Striker::set_limit(float angle1,float angle2)
     //-3.15f & 0.0f
     this->angle_max[0]=angle1;
     this->angle_max[1]=angle2;
+}
+
+void Striker::update_hover(float x,float y){
+    Utility *sketch=new Utility;
+
+    float a=this->__x-x;
+    float b=this->__y-y;
+    float distance = sqrtf(a*a + b*b);
+    this->length=distance;
+    if(this->length>5.5f)
+        this->length=5.5f;
+    if(this->length<0.5f)
+        this->length=0.5f;
+    float last=this->angle;
+    double deltaY = this->__y-y;
+    double deltaX = this->__x-x;
+    this->angle=(-1*(atan2(deltaY, deltaX)+1.56f));
+    if(this->angle<this->angle_max[0] || this->angle>this->angle_max[1])
+        this->angle=last;
 }

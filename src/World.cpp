@@ -59,6 +59,8 @@ void World::start(int argc, char *argv[]) {
     glutIdleFunc(drawEverything);
     glutKeyboardFunc(handleKeypress);
     glutSpecialFunc(specialKeypress);
+    glutMouseFunc(mouseClick);
+    glutMotionFunc(mouseMotion);
     glutReshapeFunc(handleResize);
     glutTimerFunc(UPDATE_SPEED, update, 0);
     glutMainLoop();
@@ -127,6 +129,7 @@ void World::taking_inputs(){
     if(this->taking_options==4)
     {
         this->board->convert_to_multi(1);
+        this->board->player_count(2);
         sketch->write_text(1.0f,0.0f,0.0f,-3.5f,2.0f,10,"Quick multiplayer rules :");
         sketch->write_text(1.0f,0.0f,1.0f,-3.5f,1.5f,10,"* Player 1 would start (first choice)");
         sketch->write_text(1.0f,0.0f,1.0f,-3.5f,1.0f,10,"* Player 1 has to pocket all the Black balls.");
@@ -219,4 +222,12 @@ void World::handleKeypress(unsigned char key, int x, int y) {
 void World::specialKeypress(int key, int x, int y) {
     instance->board->specialKeys(key,x,y);
     return;
+}
+
+void World::mouseClick(int button, int state, int x, int y){
+    instance->board->mouseClick(button,state,x,y);
+}
+
+void World::mouseMotion(int x, int y){
+    instance->board->mouseMotion(x,y);
 }

@@ -25,11 +25,17 @@ class Board
         void set_not_required(int);
         void convert_to_multi(int);
         void light_theme();
+        void mouseClick(int,int,int,int);
+        void mouseMotion(int,int);
         void dark_theme();
+        void player_count(int);
     private:
         int reset=0;
         int score=0;
+        int rotate_value=0;
         int queen=50;
+        int game_is_on;
+        int tplayer=1;
         int not_color_required=4;
         void pocket_coin();
         int player=0;
@@ -59,6 +65,7 @@ class Board
         float __r, __g, __b;
         float __dr, __dg, __db;
         float __br, __bg, __bb;
+        int left,right;
 };
 
 #endif // BOARD_H

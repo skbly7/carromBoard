@@ -26,6 +26,8 @@
         static void handleResize(int,int);
         static void update(int);
         static void drawEverything();
+        static void mouseClick(int,int,int,int);
+        static void mouseMotion(int,int);
         static void handleKeypress(unsigned char,int,int);
         static void specialKeypress(int,int,int);
         void drawAll();

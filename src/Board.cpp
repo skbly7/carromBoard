@@ -2,8 +2,11 @@
 #include "Utility.h"
 #include "Corner.h"
 #include <cmath>
+#include <CVector3.h>
 #include <GL/glut.h>
 #include <iostream>
+#define PI 3.141592
+#define XY_NORMALIZE 4.5f/75.0f
 
 Board::Board(float w=4.0f,float h=4.0f)
 {
@@ -13,19 +16,27 @@ Board::Board(float w=4.0f,float h=4.0f)
     this->width=w;
     this->reset=0;
     this->height=h;
+    this->tplayer=1;
     this->foul=0;
+    this->rotate_value=0;
     this->score=30;
+    this->game_is_on=0;
     this->s_w=(this->width/2)*0.75f;
     this->s_h=(this->height/2)*0.75f;
     this->place_corners();
     this->add_striker(1.0f,1.0f,0.0f,0.0f,-this->s_h*0.92f,0.25f);
     this->striker->setId(10);
     this->add_coins();
+    this->left=this->right=0;
 }
 
 void Board::convert_to_multi(int i)
 {
     this->multi=i;
+}
+void Board::player_count(int i)
+{
+    this->tplayer=i;
 }
 
 void Board::dark_theme()
@@ -138,8 +149,9 @@ void Board::main_board(){
 }
 
 void Board::draw(){
-    if(this->player==1 && this->multi==1)
+    if(this->player && this->multi)
         glRotatef(180,0.0f,0.0f,1.0f);
+    this->game_is_on=1;
     this->main_board();
     this->corner_beautify();
     this->draw_corners();
@@ -147,10 +159,8 @@ void Board::draw(){
     this->background_features();
     this->draw_coins();
     this->striker->draw();
-    if(this->player==1 && this->multi==1)
-    {
+    if(this->player && this->multi)
         glRotatef(180,0.0f,0.0f,1.0f);
-    }
     this->display_score();
     this->display_pocketed();
     if(this->multi==1)
@@ -470,5 +480,52 @@ void Board::specialKeys(int key,int x,int y) {
     if(key==103 && this->isStopped())
     {
         this->striker->decrease_power();
+    }
+}
+
+void Board::mouseClick(int button, int state, int x, int y) {
+    Utility *sketch=new Utility;
+    CVector3 temp;
+    float rotater;
+    if(this->multi==1)
+        rotater=cos(this->player*PI*180.0/180.0);
+    else
+        rotater=1;
+    temp=sketch->getCord(x,y);
+    float a=temp.fGetX()*XY_NORMALIZE*rotater,b=temp.fGetY()*XY_NORMALIZE*rotater;
+    if(!game_is_on)
+        return;
+    if(button==0)
+        this->left=!state;
+    if(button==2)
+        this->right=!state;
+
+    if(button==0 && state)
+    {
+        this->striker->update_hover(a,b);
+        this->striker->shoot();
+        this->reset=1;
+    }
+}
+
+void Board::mouseMotion(int x, int y) {
+    Utility *sketch=new Utility;
+    CVector3 temp;
+    temp=sketch->getCord(x,y);
+    float rotater;
+    if(this->multi==1)
+        rotater=cos(this->player*PI*180.0/180.0);
+    else
+        rotater=1;
+    float a=temp.fGetX()*XY_NORMALIZE*rotater,b=temp.fGetY()*XY_NORMALIZE*rotater;
+    if(!game_is_on)
+        return;
+    if(this->left)
+    {
+        this->striker->update_hover(a,b);
+    }
+    if(this->right)
+    {
+        this->striker->mouseSetLocation(a);
     }
 }

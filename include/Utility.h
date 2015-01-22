@@ -1,7 +1,6 @@
 #ifndef UTILITY_H
 #define UTILITY_H
-
-
+#include <CVector3.h>
 class Utility
 {
     public:
@@ -19,6 +18,7 @@ class Utility
         void draw_triangle(float,float,float,float,float,float,float,float,float);
         void draw_rotate_triangle(float,float,float,float,float,float,float,float,float,float,float,float,float);
         void draw_line(float,float,float,float,float,float,float);
+        CVector3 getCord(int,int);
 };
 
 #endif // UTILITY_H

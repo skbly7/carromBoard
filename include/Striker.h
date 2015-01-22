@@ -19,8 +19,10 @@ class Striker : public Coin
         void rotate_right();
         void increase_power();
         void decrease_power();
+        void update_hover(float,float);
         void set_limit(float,float);
         void set_angle(float);
+        void mouseSetLocation(float);
     protected:
     private:
         float angle_max[2];
