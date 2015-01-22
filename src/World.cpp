@@ -4,7 +4,7 @@
 #include <GL/glut.h>
 #include <Utility.h>
 #include <iostream>
-#define UPDATE_SPEED 10
+#define UPDATE_SPEED 20
 World *World::instance = NULL;
 
 World::World(int width = 640, int height = 480) {
@@ -52,8 +52,7 @@ void World::start(int argc, char *argv[]) {
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
     glutInitWindowSize(this->width, this->height);
     glutInitWindowPosition(WINDOW_X_POSITION, WINDOW_Y_POSITION);
-
-    glutCreateWindow("SHIVAM");
+    glutCreateWindow("CARROM BOARD (201403005)");
     this->initRendering();
     glutDisplayFunc(drawEverything);
     glutIdleFunc(drawEverything);
@@ -129,7 +128,6 @@ void World::taking_inputs(){
     if(this->taking_options==4)
     {
         this->board->convert_to_multi(1);
-        this->board->player_count(2);
         sketch->write_text(1.0f,0.0f,0.0f,-3.5f,2.0f,10,"Quick multiplayer rules :");
         sketch->write_text(1.0f,0.0f,1.0f,-3.5f,1.5f,10,"* Player 1 would start (first choice)");
         sketch->write_text(1.0f,0.0f,1.0f,-3.5f,1.0f,10,"* Player 1 has to pocket all the Black balls.");
@@ -146,7 +144,12 @@ void World::taking_inputs(){
         sketch->write_text(0.0f,0.5,1.0f,-3.5f,0.5f,10,"Enter your choice.......");
     }
     if(this->taking_options==6)
+    {
         this->taking_options=-1;
+        this->board->game_is_on=1;
+        this->board->start_time=sketch->getTime();
+        this->board->last_time=this->board->start_time;
+    }
     return;
 }
 
@@ -170,10 +173,12 @@ void World::options_set(unsigned char key, int x, int y){
         if(key=='1' || key=='3')
         {
             this->board->set_not_required(-10);
-            this->taking_options=3;
+            this->taking_options=5;
         }
         if(key=='2' || key=='4')
-            this->taking_options=2;
+        {
+            this->taking_options=3;
+        }
     }
     else if(this->taking_options==3)
     {

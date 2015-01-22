@@ -52,5 +52,5 @@ void Coin::draw() {
 
 Coin::Coin() {
     this->pocket=0;
-    this->__mu=0.004f;
+    this->__mu=0.01f;
 }

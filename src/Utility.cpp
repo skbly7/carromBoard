@@ -1,3 +1,4 @@
+#include <sys/time.h>
 #include "Utility.h"
 #include <GL/glut.h>
 #include <cmath>
@@ -134,4 +135,9 @@ CVector3 Utility::getCord(int x, int y)
     gluUnProject( winX, winY, winZ, modelview, projection, viewport, &posX, &posY, &posZ);
 
     return CVector3(posX, posY, posZ);
+}
+double Utility::getTime() {
+    struct timeval tim;
+    gettimeofday(&tim, NULL);
+    return tim.tv_sec+(tim.tv_usec/1000000.0);
 }

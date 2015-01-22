@@ -6,7 +6,7 @@ class Object {
         float __vx,__vy;
         float __x,__y;
         float __r, __g, __b;
-        float __mu = 0.004f;
+        float __mu = 0.4f;
     public :
         float getvx();
         virtual void setId(int);
@@ -17,7 +17,7 @@ class Object {
         bool isCollided(Object *b);
         void collided(Object *b);
         float ypos();
-        void apply_friction(int);
+        void apply_friction(double);
         float mass();
         virtual void pocketted();
         virtual void position();
@@ -30,7 +30,7 @@ class Object {
     //Setting values
         void setvx(float x);
         void setvy(float y);
-        void update_location(int);
+        void update_location(double);
         virtual float gradius();
         void mass(float m);
         void v(float x,float y);

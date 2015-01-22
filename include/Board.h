@@ -28,16 +28,18 @@ class Board
         void mouseClick(int,int,int,int);
         void mouseMotion(int,int);
         void dark_theme();
-        void player_count(int);
+        double start_time,end_time,last_time;
+        int game_is_on;
     private:
         int reset=0;
+        void score_check();
         int score=0;
         int rotate_value=0;
         int queen=50;
-        int game_is_on;
         int tplayer=1;
         int not_color_required=4;
         void pocket_coin();
+        int change_chance=0;
         int player=0;
         int processing[100][100];
         void add_striker(float,float,float,float,float,float);

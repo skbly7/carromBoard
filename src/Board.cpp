@@ -16,7 +16,7 @@ Board::Board(float w=4.0f,float h=4.0f)
     this->width=w;
     this->reset=0;
     this->height=h;
-    this->tplayer=1;
+    this->tplayer=-1;
     this->foul=0;
     this->rotate_value=0;
     this->score=30;
@@ -33,10 +33,6 @@ Board::Board(float w=4.0f,float h=4.0f)
 void Board::convert_to_multi(int i)
 {
     this->multi=i;
-}
-void Board::player_count(int i)
-{
-    this->tplayer=i;
 }
 
 void Board::dark_theme()
@@ -151,7 +147,6 @@ void Board::main_board(){
 void Board::draw(){
     if(this->player && this->multi)
         glRotatef(180,0.0f,0.0f,1.0f);
-    this->game_is_on=1;
     this->main_board();
     this->corner_beautify();
     this->draw_corners();
@@ -166,10 +161,6 @@ void Board::draw(){
     if(this->multi==1)
     {
         this->chance_kiski();
-    }
-    else
-    {
-
     }
 }
 
@@ -213,8 +204,15 @@ void Board::display_score() {
     sketch->filled_top_given(0.3f,0.7f,0.4f,-7.1f,4.5f,1.5f);
     if(this->multi==0)
     {
+        int time_elapsed=sketch->getTime()-start_time;
         sketch->write_text(0.0f,1.0f,1.0f,-7.0f,4.0f,1,"Score");
-        itoa(this->score,temp,10);
+        if(this->game_is_on==0)
+        {
+            sketch->write_text(0.0f,0.0f,0.0f,-7.0f,2.5f,1,"GAME ENDED.");
+            sketch->write_text(0.0f,0.0f,0.0f,-7.0f,2.0f,1,"YOU WON !!");
+            time_elapsed=end_time-start_time;
+        }
+        itoa(this->score-time_elapsed,temp,10);
         sketch->write_text(1.0f,1.0f,1.0f,-7.0f,3.5f,1,temp);
     }
     else
@@ -225,6 +223,15 @@ void Board::display_score() {
         {
             if(this->items[i]->notPocketed() && this->items[i]->getId()==this->player)
                 countr++;
+        }
+        if(countr==0)
+        {
+            this->game_is_on=0;
+            itoa(this->player+1,temp,10);
+            sketch->write_text(0.0f,0.0f,0.0f,-7.0f,2.5f,1,"GAME ENDED.");
+            sketch->write_text(0.0f,0.0f,0.0f,-7.0f,2.0f,1,"PLAYER ");
+            sketch->write_text(0.0f,0.0f,0.0f,-5.95f,2.0f,1,temp);
+            sketch->write_text(0.0f,0.0f,0.0f,-5.8f,2.0f,1," WON");
         }
         itoa(countr,temp,10);
         sketch->write_text(1.0f,1.0f,1.0f,-7.0f,3.5f,1,temp);
@@ -314,10 +321,14 @@ Board::~Board()
     //dtor
 }
 void Board::move_coins(){
+    Utility *sketch = new Utility;
+    double current_time = sketch->getTime();
+    double time_elapsed = current_time - last_time;
+    last_time = current_time;
     for(int i=0;i<items_count;i++)
     {
         if(this->items[i]->notPocketed())
-            this->items[i]->update_location(1);
+            this->items[i]->update_location(time_elapsed);
     }
 }
 void Board::check_wall()
@@ -363,6 +374,7 @@ void Board::pocket_coin() {
             {
                 this->items[j]->pocketted();
                 this->pocketed[pocketed_count++]=this->items[j];
+                this->change_chance=1;
             }
                 if(this->items[j]->getId() == this->not_color_required)
                     this->score-=5;
@@ -372,18 +384,52 @@ void Board::pocket_coin() {
                     this->score-=5;
                 else if(this->items[j]->getId()!=10)
                     this->score+=10;
-                this->player=1-this->player;
-//                std::cout<<score<<" "<<this->items[j]->getId()<<" pocketed\n";
             this->items[j]->v(0.0f,0.0f);
         }
 }
 
 void Board::update(){
-    this->check_wall();
-    this->collision_handle();
-    this->pocket_coin();
-    this->move_coins();
-    this->reset_striker();
+    if(this->game_is_on==1)
+    {
+        this->check_wall();
+        this->collision_handle();
+        this->pocket_coin();
+        this->move_coins();
+        this->reset_striker();
+        this->score_check();
+    }
+}
+
+void Board::score_check() {
+    Utility *sketch=new Utility;
+    if(this->multi==1)
+    {
+        int white_over=1,black_over=1;
+        for(int i=1;i<items_count;i++) {
+            if(this->items[i]->notPocketed() && this->items[i]->getId()==0)
+                white_over=0;
+            if(this->items[i]->notPocketed() && this->items[i]->getId()==1)
+                black_over=0;
+        }
+        if(!white_over && !black_over)
+            return;
+        if(white_over)
+            this->tplayer=0;
+        if(black_over)
+            this->tplayer=1;
+        this->game_is_on=0;
+    }
+    else
+    {
+        for(int i=1;i<items_count;i++) {
+            if(this->items[i]->getId()==not_color_required)
+                continue;
+            if(this->items[i]->notPocketed())
+                return;
+        }
+        this->game_is_on=0;
+        this->end_time=sketch->getTime();
+    }
 }
 
 void Board::reset_striker()
@@ -392,7 +438,8 @@ void Board::reset_striker()
     {
         Sleep(500);
         this->reset=0;
-        this->player=1-this->player;
+        if(!this->change_chance)
+            this->player=1-this->player;
         if(this->player==0 || this->multi==0)
         {
             this->striker->set_angle(0.0f);
@@ -451,6 +498,7 @@ void Board::handleKeys(unsigned char key, int x, int y) {
     if(key==' ' && this->isStopped())
     {
         this->striker->shoot();
+        this->change_chance=0;
         this->reset=1;
     }
 }
@@ -493,7 +541,7 @@ void Board::mouseClick(int button, int state, int x, int y) {
         rotater=1;
     temp=sketch->getCord(x,y);
     float a=temp.fGetX()*XY_NORMALIZE*rotater,b=temp.fGetY()*XY_NORMALIZE*rotater;
-    if(!game_is_on)
+    if(!this->game_is_on || this->isRunning())
         return;
     if(button==0)
         this->left=!state;
@@ -518,7 +566,7 @@ void Board::mouseMotion(int x, int y) {
     else
         rotater=1;
     float a=temp.fGetX()*XY_NORMALIZE*rotater,b=temp.fGetY()*XY_NORMALIZE*rotater;
-    if(!game_is_on)
+    if(!this->game_is_on || this->isRunning())
         return;
     if(this->left)
     {

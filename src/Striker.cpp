@@ -71,7 +71,7 @@ void Striker::draw() {
 }
 
 void Striker::shoot() {
-    float power=(this->length/15.0f);
+    float power=(this->length/1.0f);
     if(this->getvx()==0 && this->getvy()==0)
         this->v(power*sinf(this->angle),power*cosf(this->angle));
 }

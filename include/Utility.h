@@ -19,6 +19,7 @@ class Utility
         void draw_rotate_triangle(float,float,float,float,float,float,float,float,float,float,float,float,float);
         void draw_line(float,float,float,float,float,float,float);
         CVector3 getCord(int,int);
+        double getTime();
 };
 
 #endif // UTILITY_H

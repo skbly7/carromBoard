@@ -51,7 +51,7 @@ float Object::xpos(){
 float Object::ypos(){
     return this->__y;
 }
-void Object::apply_friction(int t=1) {
+void Object::apply_friction(double t) {
     //AT x-axis
     float vx= fabs(this->getvx());
     float vy= fabs(this->getvy());
@@ -79,9 +79,9 @@ void Object::apply_friction(int t=1) {
     else
         this->setvy(0.0f);
 }
-void Object::update_location(int t=1) {
+void Object::update_location(double t) {
     this->apply_friction(t);
-    this->position(this->xpos()+this->getvx(),this->ypos()+this->getvy());
+    this->position(this->xpos()+this->getvx()*t,this->ypos()+this->getvy()*t);
 }
 float Object::gradius() {
     return 0.0f;
@@ -107,7 +107,7 @@ void Object::pocketted(){
 }
 void Object::collided(Object *b)
 {
-    float E=0.7f;
+    float E=0.5f;
     float m1 = this->mass();
     float m2 = b->mass();
     float d = sqrtf( (this->xpos() - b->xpos()) * (this->xpos() - b->xpos()) + (this->ypos() - b->ypos()) * (this->ypos() - b->ypos()));
