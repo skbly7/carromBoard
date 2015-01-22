@@ -1,9 +1,9 @@
 CC = g++
-CFLAGS = -Wall
-PROG = sampleCollision
+CFLAGS = -Wall -w
+PROG = carrom
 
-SRCS = main.cpp
-LIBS = -lglut -lGL -lGLU -std=c++11
+SRCS = main.cpp Board.cpp Coin.cpp Corner.cpp Striker.cpp object.cpp Utility.cpp World.cpp CVector3.cpp
+LIBS = -lglut -lGL -lGLU
 
 all: $(PROG)
 
