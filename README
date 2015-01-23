@@ -1,0 +1,10 @@
+2 player Carrom board
+1 player Carrom
+2 Themes
+Different scoring patterns
+
+<h1>OpenGL C++</h1>
+
+The executable can be found in bin/Debug folder.
+All .o files in obj/Debug.
+The source code is in form of Codeblock project and can be imported using Ass1.cbp file present in sourceCode.
